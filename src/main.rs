@@ -70,10 +70,12 @@ impl AppState {
 
     fn normalize_url(url: &str) -> String {
         let replacements = [
-            ("monochrome.tf/#", "listen.tidal.com"),
-            ("monochrome.prigoana.com/#", "listen.tidal.com"),
-            ("tidal.squid.wtf", "listen.tidal.com"),
-            ("tidal.qqdl.site", "listen.tidal.com"),
+            ("monochrome.tf/#", "listen.tidal.com/"),
+            ("monochrome.tf/%23", "listen.tidal.com/"),
+            ("monochrome.prigoana.com/#", "listen.tidal.com/"),
+            ("monochrome.prigoana.com/%23", "listen.tidal.com/"),
+            ("tidal.squid.wtf/", "listen.tidal.com/"),
+            ("tidal.qqdl.site/", "listen.tidal.com/"),
         ];
         
         let mut normalized = url.to_string();
