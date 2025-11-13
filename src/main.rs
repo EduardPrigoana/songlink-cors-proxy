@@ -1,4 +1,3 @@
-// main.rs
 use axum::{
     extract::{Query, State},
     http::StatusCode,
@@ -69,6 +68,26 @@ impl AppState {
         }
     }
 
+    fn normalize_url(url: &str) -> String {
+        let replacements = [
+            ("monochrome.tf/#", "listen.tidal.com"),
+            ("monochrome.prigoana.com/#", "listen.tidal.com"),
+            ("tidal.squid.wtf", "listen.tidal.com"),
+            ("tidal.qqdl.site", "listen.tidal.com"),
+        ];
+        
+        let mut normalized = url.to_string();
+        
+        for (from, to) in &replacements {
+            if normalized.contains(from) {
+                normalized = normalized.replace(from, to);
+                break;
+            }
+        }
+        
+        normalized
+    }
+
     fn build_api_url(params: &ProxyQuery) -> String {
         let mut api_url = String::with_capacity(256);
         api_url.push_str("https://api.song.link/v1-alpha.1/links?url=");
@@ -110,8 +129,10 @@ impl AppState {
 
 async fn proxy_handler(
     State(state): State<Arc<AppState>>,
-    Query(params): Query<ProxyQuery>,
+    Query(mut params): Query<ProxyQuery>,
 ) -> Result<Json<serde_json::Value>, Response> {
+    params.url = AppState::normalize_url(&params.url);
+    
     let cache_key = AppState::build_api_url(&params);
 
     {
