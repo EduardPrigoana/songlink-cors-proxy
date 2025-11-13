@@ -68,23 +68,27 @@ impl AppState {
         }
     }
 
-    fn normalize_url(url: &str) -> String {
-        let replacements = [
-            ("monochrome.tf/#", "listen.tidal.com/"),
-            ("monochrome.tf/%23", "listen.tidal.com/"),
-            ("monochrome.prigoana.com/#", "listen.tidal.com/"),
-            ("monochrome.prigoana.com/%23", "listen.tidal.com/"),
-            ("tidal.squid.wtf/", "listen.tidal.com/"),
-            ("tidal.qqdl.site/", "listen.tidal.com/"),
-        ];
+    fn normalize_url(url_str: &str) -> String {
+        let mut normalized = url_str.to_string();
         
-        let mut normalized = url.to_string();
-        
-        for (from, to) in &replacements {
-            if normalized.contains(from) {
-                normalized = normalized.replace(from, to);
-                break;
-            }
+        if normalized.contains("monochrome.tf") || normalized.contains("monochrome.prigoana.com") {
+            normalized = normalized
+                .replace("https://monochrome.tf/#", "https://listen.tidal.com/")
+                .replace("http://monochrome.tf/#", "https://listen.tidal.com/")
+                .replace("https://monochrome.tf/%23", "https://listen.tidal.com/")
+                .replace("http://monochrome.tf/%23", "https://listen.tidal.com/")
+                .replace("https://monochrome.prigoana.com/#", "https://listen.tidal.com/")
+                .replace("http://monochrome.prigoana.com/#", "https://listen.tidal.com/")
+                .replace("https://monochrome.prigoana.com/%23", "https://listen.tidal.com/")
+                .replace("http://monochrome.prigoana.com/%23", "https://listen.tidal.com/");
+        } else if normalized.contains("tidal.squid.wtf") {
+            normalized = normalized
+                .replace("https://tidal.squid.wtf/", "https://listen.tidal.com/")
+                .replace("http://tidal.squid.wtf/", "https://listen.tidal.com/");
+        } else if normalized.contains("tidal.qqdl.site") {
+            normalized = normalized
+                .replace("https://tidal.qqdl.site/", "https://listen.tidal.com/")
+                .replace("http://tidal.qqdl.site/", "https://listen.tidal.com/");
         }
         
         normalized
